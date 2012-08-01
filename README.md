@@ -1,4 +1,4 @@
 ryans-java-playground
 =====================
 
-Ryan's Java Playground
+I've decided to do some experimentation with Java Swing development. This is my playground.
