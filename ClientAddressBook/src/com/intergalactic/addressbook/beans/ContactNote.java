@@ -48,6 +48,29 @@ public class ContactNote implements Serializable {
 		this.noteText = noteText;
 	}
 	
+	public static ContactNote loadForContact(int contactID){
+		Connection conn;
+		ContactNote c = new ContactNote();
+		try{
+			Class.forName(Configuration.getDbdriver());
+			conn = DriverManager.getConnection(Configuration.getDburl(), Configuration.getDbusername(), Configuration.getDbpassword());
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(String.format("SELECT * FROM ContactNote WHERE ContactID = %1$", contactID));
+			while (rs.next()){
+				c.setId(rs.getInt("ID"));
+				c.setContactId(rs.getInt("ContactID"));
+				c.setDateAdded(new Date(rs.getDate("DateAdded").toString()));
+				c.setNoteText(rs.getString("Note"));
+			}
+			rs.close();
+			conn.close();
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+		return c;
+	}
+	
 	public static ContactNote Load(int id){
 		Connection conn;
 		ContactNote c = new ContactNote();

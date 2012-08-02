@@ -50,6 +50,7 @@ public class Person implements Serializable {
 		String oldFirstName = this.firstName;
 		this.firstName = firstName;
 		changeSupport.firePropertyChange("firstName", oldFirstName, firstName);
+		changeSupport.firePropertyChange("fullName", oldFirstName, firstName);
 	}
 	
 	public String getLastName() {
@@ -60,6 +61,11 @@ public class Person implements Serializable {
 		String oldLastName = this.lastName;
 		this.lastName = lastName;
 		changeSupport.firePropertyChange("lastName", oldLastName, lastName);
+		changeSupport.firePropertyChange("fullName", oldLastName, lastName);
+	}
+	
+	public String getFullName(){
+		return String.format("%s %s", firstName,lastName);
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener x) {

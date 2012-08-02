@@ -2,6 +2,7 @@ package com.intergalactic.addressbook.views;
 
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -23,8 +24,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
+import com.intergalactic.addressbook.Contact;
 import com.intergalactic.addressbook.beans.Person;
-import com.intergalactic.addressbook.models.PersonsModel;
+import com.intergalactic.addressbook.models.ContactZoomPresentationModel;
+import com.intergalactic.addressbook.models.PersonListPresentationModel;
 import com.jgoodies.binding.adapter.Bindings;
 import com.jgoodies.binding.beans.BeanAdapter;
 import com.jgoodies.binding.beans.PropertyConnector;
@@ -40,6 +43,7 @@ public class AddressBookView {
 	JButton btnAddPerson;
 	JButton btnSave;
 	JButton btnDelete;
+	JButton btnDetails;
 
 	/**
 	 * Launch the application.
@@ -134,8 +138,8 @@ public class AddressBookView {
 					.addContainerGap(81, Short.MAX_VALUE))
 		);
 		
-		JButton btnNewButton = new JButton("Details");
-		toolBar.add(btnNewButton);
+		btnDetails = new JButton("Details");
+		toolBar.add(btnDetails);
 		
 		btnAddPerson = new JButton("Add Person");
 		toolBar.add(btnAddPerson);
@@ -146,7 +150,7 @@ public class AddressBookView {
 		btnDelete = new JButton("Delete");
 		toolBar.add(btnDelete);
 		frmAddressBook.getContentPane().setLayout(groupLayout);
-		frmAddressBook.getContentPane().setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{table, scrollPane, toolBar, btnNewButton}));
+		frmAddressBook.getContentPane().setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{table, scrollPane, toolBar, btnDetails}));
 		
 		JMenuBar menuBar = new JMenuBar();
 		frmAddressBook.setJMenuBar(menuBar);
@@ -162,9 +166,9 @@ public class AddressBookView {
  * Perform initial bindings	
  */
 	private void setUpBindings(){
-		final PersonsModel pm = new PersonsModel(); //create an initial PersonsModel view model
-		BeanAdapter<PersonsModel> ba = new BeanAdapter<PersonsModel>(pm,true); //create a BeanAdapter for PersonsModel to connect properties
-		BeanAdapter<Person> pa = new BeanAdapter<Person>(new Person(),true); //Create a BeanAdapter for Persons to connect properties of persons
+		final PersonListPresentationModel pm = new PersonListPresentationModel(); //create an initial PersonsModel view model
+		BeanAdapter<PersonListPresentationModel> ba = new BeanAdapter<PersonListPresentationModel>(pm,true); //create a BeanAdapter for PersonsModel to connect properties
+		final BeanAdapter<Person> pa = new BeanAdapter<Person>(new Person(),true); //Create a BeanAdapter for Persons to connect properties of persons
 		
 		table.addPropertyChangeListener(new listen());
 		//wire up table from the adapter 
@@ -188,10 +192,21 @@ public class AddressBookView {
 				pm.setSelectionIndex(table.getSelectedRow());
 			}
 		});
+		
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2){
+					pm.getExecuteZoomContact().actionPerformed(null);
+				}
+			}
+		});
 
 		btnAddPerson.setAction(pm.getExecuteAddPerson());
 		btnSave.setAction(pm.getExecuteSavePerson());
 		btnDelete.setAction(pm.getExecuteDeletePerson());
+		btnDetails.setAction(pm.getExecuteZoomContact());
+		
 	}
 	private class listen implements PropertyChangeListener{
 

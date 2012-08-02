@@ -6,11 +6,15 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.intergalactic.addressbook.Contact;
+import com.intergalactic.addressbook.InjectionContainer;
 import com.intergalactic.addressbook.beans.Person;
 import com.jgoodies.binding.beans.ExtendedPropertyChangeSupport;
 import com.jgoodies.binding.list.SelectionInList;
 
-public class PersonsModel {
+public class PersonListPresentationModel {
 	private ExtendedPropertyChangeSupport changeSupport = new ExtendedPropertyChangeSupport(this);
 	private selectionChangeListener scl = new selectionChangeListener();
 	private PersonsTableModel tableModel;
@@ -19,12 +23,14 @@ public class PersonsModel {
 	private AddPersonAction executeAddPerson;
 	private SavePersonAction executeSavePerson;
 	private DeletePersonAction executeDeletePerson;
+	private ZoomContactAction executeZoomContact;
 	
-	public PersonsModel(){
+	public PersonListPresentationModel(){
 		addPropertyChangeListener(scl);
 		executeAddPerson = new AddPersonAction();
 		executeSavePerson = new SavePersonAction();
 		executeDeletePerson = new DeletePersonAction();
+		executeZoomContact = new ZoomContactAction();
 	}
 	
 	public PersonsTableModel getTableModel(){
@@ -66,6 +72,10 @@ public class PersonsModel {
 	
 	public DeletePersonAction getExecuteDeletePerson(){
 		return executeDeletePerson;
+	}
+	
+	public ZoomContactAction getExecuteZoomContact(){
+		return executeZoomContact;
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener x){
@@ -137,6 +147,27 @@ public class PersonsModel {
 		}
 		
 	}
+	
+	public class ZoomContactAction extends AbstractAction{
+
+		public ZoomContactAction(){
+			putValue(NAME, "Contact Details");
+			putValue(SHORT_DESCRIPTION, "Shows contact details for the current person");
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			Contact c = new Contact(getCurrentPerson());
+			Injector container = Guice.createInjector(new InjectionContainer());
+			ContactZoomPresentationModel pm = container.getInstance(ContactZoomPresentationModel.class);
+			pm.setContact(c);
+			pm.showContact();
+			
+		}
+		
+	}
+	
 	
 	
 	
